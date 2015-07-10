@@ -5,11 +5,17 @@
 # Compiler settings
 CC      ?= gcc
 
-CFLAGS  += -fPIC -Wall -Wextra -ansi -pedantic
+CFLAGS  += -fPIC -Wall -Wextra -pedantic
 ifndef DEBUG
 CFLAGS	+= -O2
 else
 CFLAGS  += -g
+endif
+
+ifeq "$(CC)" "clang"
+CFLAGS += -Weverything
+else
+CFLAGS += -pedantic
 endif
 
 # Ar settings to build the library
