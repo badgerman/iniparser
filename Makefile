@@ -12,7 +12,7 @@ else
 CFLAGS  += -g
 endif
 
-include Makefile.compiler
+include Makefile.include
 
 # Ar settings to build the library
 AR	    ?= ar

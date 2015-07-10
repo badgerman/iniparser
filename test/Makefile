@@ -14,7 +14,7 @@ INCLUDE = -I../src
 CFLAGS  = -pipe -pedantic -Wall -Wextra -g
 LDFLAGS =
 
-include ../Makefile.compiler
+include ../Makefile.include
 
 all: check
 
