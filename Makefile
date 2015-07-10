@@ -12,13 +12,7 @@ else
 CFLAGS  += -g
 endif
 
-ifeq "$(CC)" "clang"
-CFLAGS += -Weverything -Wno-documentation -Wno-conversion \
--Wno-disabled-macro-expansion -Wno-switch-enum \
--Wno-padded -Wno-unused-macros
-else
-CFLAGS += -pedantic
-endif
+include Makefile.compiler
 
 # Ar settings to build the library
 AR	    ?= ar
