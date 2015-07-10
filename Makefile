@@ -5,7 +5,7 @@
 # Compiler settings
 CC      ?= gcc
 
-CFLAGS  += -fPIC -Wall -Wextra -pedantic
+CFLAGS  += -fPIC -Wall -Wextra -pedantic -Werror
 ifndef DEBUG
 CFLAGS	+= -O2
 else
@@ -13,7 +13,9 @@ CFLAGS  += -g
 endif
 
 ifeq "$(CC)" "clang"
-CFLAGS += -Weverything
+CFLAGS += -Weverything -Wno-documentation -Wno-conversion \
+-Wno-disabled-macro-expansion -Wno-switch-enum -Wno-missing-prototypes \
+-Wno-padded -Wno-unused-macros
 else
 CFLAGS += -pedantic
 endif
