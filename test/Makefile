@@ -12,7 +12,7 @@ OBJ = $(SRC:.c=.o)
 
 INCLUDE = -I../src
 CFLAGS  = -pipe -pedantic -Wall -Wextra -g
-LDFLAGS =
+LDFLAGS = -lm
 
 include ../Makefile.include
 
