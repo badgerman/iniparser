@@ -69,7 +69,7 @@ libiniparser.so:	$(OBJS)
 		-Wl,-soname=`basename $@`.0
 
 clean:
-	$(RM) $(OBJS)
+	$(RM) $(OBJS) doxygen_sqlite3.db
 	@(cd test ; $(MAKE) clean)
 
 veryclean:

@@ -4,11 +4,12 @@ compiler:
 - gcc
 - clang
 script:
-- make
+- make default docs example check
 addons:
   apt:
     packages:
      - valgrind
+     - doxygen
 os:
 - linux
 - osx
