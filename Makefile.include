@@ -1,13 +1,16 @@
 ifeq "$(CC)" "clang"
 CFLAGS += -Weverything \
--Wno-documentation \
+-Wno-padded \
 -Wno-conversion \
+-Wno-documentation \
 -Wno-disabled-macro-expansion \
 -Wno-switch-enum \
--Wno-padded \
--Wno-unused-macros \
--Wno-missing-prototypes \
--Wno-format-nonliteral
+-Wno-unused-macros
+
+# CuTest
+CUTEST_CFLAGS = \
+-Wno-format-nonliteral \
+-Wno-missing-prototypes
 endif
 
 ifeq "$CC" "gcc"

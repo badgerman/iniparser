@@ -704,6 +704,7 @@ dictionary * iniparser_load(const char * ininame)
         switch (iniparser_line(line, section, key, val)) {
             case LINE_EMPTY:
             case LINE_COMMENT:
+            case LINE_UNPROCESSED:
             break ;
 
             case LINE_SECTION:
@@ -722,9 +723,6 @@ dictionary * iniparser_load(const char * ininame)
             fprintf(stderr, "-> %s\n", line);
             errs++ ;
             break;
-
-            default:
-            break ;
         }
         memset(line, 0, ASCIILINESZ);
         last=0;
