@@ -6,12 +6,12 @@ add_library (${PROJECT_NAME}
  src/dictionary.c
  src/dictionary.h)
 
-set (INIPARSER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "IniParser headers")
+set (INIPARSER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src CACHE INTERNAL "IniParser headers")
 set (INIPARSER_LIBRARIES iniparser CACHE INTERNAL "IniParser libraries")
 
-INCLUDE_DIRECTORIES (src)
+include_directories (src)
 
-add_executable(inifile inifile.c)
+add_executable(inifile example/inifile.c)
 target_link_libraries(inifile ${INIPARSER_LIBRARIES})
 install(TARGETS inifile DESTINATION "bin")
 
