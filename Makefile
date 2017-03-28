@@ -19,7 +19,7 @@ AR	    ?= ar
 ARFLAGS = rcv
 
 SHLD = ${CC} ${CFLAGS}
-LDSHFLAGS = -shared -Wl,-Bsymbolic
+LDSHFLAGS = -shared
 LDFLAGS += -Wl,-rpath -Wl,/usr/lib -Wl,-rpath,/usr/lib
 
 # Set RANLIB to ranlib on systems that require it (Sun OS < 4, Mac OSX)
