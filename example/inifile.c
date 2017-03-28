@@ -1,7 +1,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "iniparser.h"
+
+#include <iniparser.h>
 
 const char *progname = "inifile";
 
@@ -28,17 +29,17 @@ int main(int argc, char ** argv) {
         usage();
         return 1;
     }
-    ini = iniparser_new(inifile);
+    ini = iniparser_load(inifile);
     if (!ini) {
         fprintf(stderr, "could not open %s.\n", inifile);
         return 1;
     }
     if (strcmp(command, "add")==0) {
         if (argc==4) {
-            iniparser_setstr(ini, argv[3], "");
+            iniparser_set(ini, argv[3], "");
         }
         else if (argc==5) {
-            iniparser_setstr(ini, argv[3], argv[4]);
+            iniparser_set(ini, argv[3], argv[4]);
         }
         else {
             fputs("set needs one or two arguments.\n", stderr);
@@ -61,6 +62,6 @@ int main(int argc, char ** argv) {
         iniparser_dump_ini(ini, F);
         fclose(F);
     }
-    iniparser_free(ini);
+    iniparser_freedict(ini);
     return 0;
 }

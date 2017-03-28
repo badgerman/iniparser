@@ -3,25 +3,22 @@
 #
 
 CC      = gcc
-CFLAGS  = -g -I../src
+CFLAGS  = -g -I../src -Wall
 LFLAGS  = -L.. -liniparser
 AR	    = ar
 ARFLAGS = rcv
 RM      = rm -f
-
+EXAMPLES = iniexample parse inifile
 
 default: all
 
-all: iniexample parse
+all: $(EXAMPLES)
 
-iniexample: iniexample.c
-	$(CC) $(CFLAGS) -o iniexample iniexample.c -I../src -L.. -liniparser
-
-parse: parse.c
-	$(CC) $(CFLAGS) -o parse parse.c -I../src -L.. -liniparser
+%: %.c
+	$(CC) $(CFLAGS) -o $@ $< -I../src -L.. -liniparser
 
 clean veryclean:
-	$(RM) iniexample example.ini parse
+	$(RM) $(EXAMPLES) example.ini
 
 
 
