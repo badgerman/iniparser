@@ -20,7 +20,7 @@ AR	    ?= ar
 ARFLAGS = rcv
 
 SHLD = ${CC} ${CFLAGS}
-LDSHFLAGS = -shared
+LDSHFLAGS = -shared -Wl,-Bsymbolic
 LDFLAGS += -Wl,-rpath -Wl,/usr/lib -Wl,-rpath,/usr/lib
 
 # .so.0 is for version 3.x, .so.1 is 4.x
