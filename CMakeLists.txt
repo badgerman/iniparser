@@ -16,7 +16,7 @@ target_link_libraries(inifile ${INIPARSER_LIBRARIES})
 install(TARGETS inifile DESTINATION "bin")
 
 IF (MSVC)
-    find_package (MSVC MODULE)
+    include (MSVC)
     MSVC_CRT_SECURE_NO_WARNINGS (${PROJECT_NAME})
     MSVC_CRT_SECURE_NO_WARNINGS (inifile)
 ENDIF (MSVC)
