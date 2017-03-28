@@ -5,18 +5,14 @@
 # Compiler settings
 CC      ?= gcc
 
-CFLAGS  += -fPIC -Wall -Wextra -pedantic
+CFLAGS  += -fPIC -Wall -Wextra -pedantic -Werror
 ifndef DEBUG
 CFLAGS	+= -O2
 else
 CFLAGS  += -g
 endif
 
-ifeq "$(CC)" "clang"
-CFLAGS += -Weverything
-else
-CFLAGS += -pedantic
-endif
+include Makefile.include
 
 # Ar settings to build the library
 AR	    ?= ar
@@ -67,7 +63,7 @@ libiniparser.so:	$(OBJS)
 		-Wl,-soname=`basename $@`.0
 
 clean:
-	$(RM) $(OBJS)
+	$(RM) $(OBJS) doxygen_sqlite3.db
 	@(cd test ; $(MAKE) clean)
 
 veryclean:

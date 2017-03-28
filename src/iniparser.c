@@ -87,7 +87,7 @@ static char * xstrdup(const char * s)
   @return   unsigned New size of the string.
  */
 /*--------------------------------------------------------------------------*/
-unsigned strstrip(char * s)
+static unsigned strstrip(char * s)
 {
     char *last = NULL ;
     char *dest = s;
@@ -704,6 +704,7 @@ dictionary * iniparser_load(const char * ininame)
         switch (iniparser_line(line, section, key, val)) {
             case LINE_EMPTY:
             case LINE_COMMENT:
+            case LINE_UNPROCESSED:
             break ;
 
             case LINE_SECTION:
@@ -722,9 +723,6 @@ dictionary * iniparser_load(const char * ininame)
             fprintf(stderr, "-> %s\n", line);
             errs++ ;
             break;
-
-            default:
-            break ;
         }
         memset(line, 0, ASCIILINESZ);
         last=0;
