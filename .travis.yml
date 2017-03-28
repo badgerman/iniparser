@@ -12,7 +12,6 @@ addons:
      - doxygen
 os:
 - linux
-- osx
 notifications:
   slack:
     secure: Idp0W+qgj1sH7JwQG4Qhc+fUHqWEK4IBd3fZWvKmDtAXfq2Q0N/SFp+TuuEd69aVvAJU6bIupmw4Gr2z1Rn1LSb94bmC+s6CtGinh3zRX9WFM7nnLPoO8Rxt1cTqh88C9cAFt1L2sLCb2Tem0q7YV4qzuUqilIyxaqa6iP0KGv8=
