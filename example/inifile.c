@@ -7,7 +7,7 @@
 const char *progname = "inifile";
 
 void usage(void) {
-    fprintf(stdout, "Usage: %s file.ini [add|del] <args>\n", progname);
+    fprintf(stdout, "Usage: %s file.ini [add|del|get] <args>\n", progname);
 }
 
 int main(int argc, char ** argv) {
@@ -52,6 +52,16 @@ int main(int argc, char ** argv) {
             return 1;
         }
         iniparser_unset(ini, argv[3]);
+    }
+    else if (strcmp(command, "get")==0) {
+        if (argc == 4) {
+          fputs(iniparser_getstring(ini, argv[3], ""), stdout);
+        } else if (argc == 5) {
+          fputs(iniparser_getstring(ini, argv[3], argv[4]), stdout);
+        } else {
+            fputs("get needs one or two arguments.\n", stderr);
+            return 1;
+        }
     } else {
         fprintf(stderr, "unknown command %s.\n", command);
         usage();
