@@ -46,6 +46,20 @@ int main(int argc, char ** argv) {
             return 1;
         }
     }
+    else if (strcmp(command, "get")==0) {
+        const char * str;
+	if (argc==4) {
+            str = iniparser_getstring(ini, argv[3], "");
+        }
+        else if (argc==5) {
+            str = iniparser_getstring(ini, argv[3], argv[4]);
+        }
+        else {
+            fputs("set needs one or two arguments.\n", stderr);
+            return 1;
+        }
+	fprintf(stdout, "%s\n", str);
+    }
     else if (strcmp(command, "del")==0) {
         if (argc<4) {
             fputs("del needs one argument.\n", stderr);
