@@ -1,0 +1,22 @@
+ifeq "$(CC)" "clang"
+CFLAGS += -Weverything \
+-Wno-padded \
+-Wno-conversion \
+-Wno-documentation \
+-Wno-disabled-macro-expansion \
+-Wno-switch-enum \
+-Wno-unused-macros
+
+# CuTest
+CUTEST_CFLAGS = \
+-Wno-format-nonliteral \
+-Wno-missing-prototypes
+endif
+
+ifeq "$CC" "gcc"
+CFLAGS += -pedantic
+endif
+
+ifeq "$CC" "tcc"
+CFLAGS += -Wunsupported
+endif

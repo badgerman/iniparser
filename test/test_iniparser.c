@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <stdarg.h>
 
 #include "CuTest.h"
 #include "dictionary.h"
@@ -95,7 +96,7 @@ void Test_iniparser_strstrip(CuTest *tc)
     };
     const char *test_with_spaces = "I am a test with\tspaces.";
     char stripped[ASCIILINESZ+1];
-    char error_msg[128];
+    char error_msg[1060];
     unsigned i;
 
     /* NULL ptr as input */
@@ -230,9 +231,9 @@ void Test_iniparser_getseckeys(CuTest *tc)
     dictionary_unset(dic, "sec0:key2");
 
     CuAssertPtrEquals(tc, NULL, iniparser_getseckeys(dic, "sec42", keys));
-    nkeys = iniparser_getsecnkeys(dic, "sec99");
+    nkeys = iniparser_getsecnkeys(dic, "Sec99");
     CuAssertIntEquals(tc, nkeys, 9);
-    CuAssertPtrEquals(tc, keys, iniparser_getseckeys(dic, "sec99", keys));
+    CuAssertPtrEquals(tc, keys, iniparser_getseckeys(dic, "Sec99", keys));
     for (i = 0; i < 9; ++i) {
         sprintf(key_name, "sec99:key%d", i);
         CuAssertStrEquals(tc, key_name, keys[i]);
@@ -333,6 +334,69 @@ void Test_iniparser_getint(CuTest *tc)
         sprintf(key_name, "int:bad%d", i);
         CuAssertIntEquals(tc, 0,
                           iniparser_getint(dic, key_name, 0));
+    }
+    dictionary_del(dic);
+}
+
+void Test_iniparser_getlongint(CuTest *tc)
+{
+    unsigned i;
+    char key_name[64];
+    dictionary *dic;
+    const struct { long int num; const char *value; } good_val[] = {
+        { 0, "0" },
+        { 1, "1" },
+        { -1, "-1" },
+        { 1000, "1000" },
+        { 077, "077" },
+        { -01000, "-01000" },
+        { 0x7FFFFFFFFFFFFFFF, "0x7FFFFFFFFFFFFFFF" },
+        { -0x7FFFFFFFFFFFFFFF, "-0x7FFFFFFFFFFFFFFF" },
+        { 0x4242, "0x4242" },
+        { 0, NULL} /* must be last */
+    };
+    const char *bad_val[] = {
+        "",
+        "notanumber",
+        "0x",
+        "k2000",
+        " ",
+        "0xG1"
+    };
+    /* NULL test */
+    CuAssertLongIntEquals(tc, -42, iniparser_getlongint(NULL, NULL, -42));
+    CuAssertLongIntEquals(tc, -42, iniparser_getlongint(NULL, "dummy", -42));
+
+    /* Check the def return element */
+    dic = dictionary_new(10);
+    CuAssertLongIntEquals(tc, 42, iniparser_getlongint(dic, "dummy", 42));
+    CuAssertLongIntEquals(tc, 0x7FFFFFFFFFFFFFFF, iniparser_getlongint(dic, NULL, 0x7FFFFFFFFFFFFFFF));
+    CuAssertLongIntEquals(tc, -0x7FFFFFFFFFFFFFFF, iniparser_getlongint(dic, "dummy", -0x7FFFFFFFFFFFFFFF));
+    dictionary_del(dic);
+
+    /* Generic dictionary */
+    dic = dictionary_new(10);
+    for (i = 0; good_val[i].value != NULL; ++i) {
+        sprintf(key_name, "longint:value%d", i);
+        dictionary_set(dic, key_name, good_val[i].value);
+    }
+    for (i = 0; good_val[i].value != NULL; ++i) {
+        sprintf(key_name, "longint:value%d", i);
+        CuAssertLongIntEquals(tc, good_val[i].num,
+                          iniparser_getlongint(dic, key_name, 0));
+    }
+    dictionary_del(dic);
+
+    /* Test bad names */
+    dic = dictionary_new(10);
+    for (i = 0; i < sizeof (bad_val) / sizeof (char *); ++i) {
+        sprintf(key_name, "longint:bad%d", i);
+        dictionary_set(dic, key_name, bad_val[i]);
+    }
+    for (i = 0; i < sizeof (bad_val) / sizeof (char *); ++i) {
+        sprintf(key_name, "longint:bad%d", i);
+        CuAssertLongIntEquals(tc, 0,
+                          iniparser_getlongint(dic, key_name, 0));
     }
     dictionary_del(dic);
 }
@@ -487,6 +551,10 @@ void Test_iniparser_line(CuTest *tc)
     CuAssertStrEquals(tc, "empty_value", key);
     CuAssertStrEquals(tc, "", val);
 
+    CuAssertIntEquals(tc, LINE_VALUE, iniparser_line("empty_value =        \t\n", section, key, val));
+    CuAssertStrEquals(tc, "empty_value", key);
+    CuAssertStrEquals(tc, "", val);
+
     CuAssertIntEquals(tc, LINE_VALUE, iniparser_line("key =\tval # comment", section, key, val));
     CuAssertStrEquals(tc, "key", key);
     CuAssertStrEquals(tc, "val", val);
@@ -498,10 +566,27 @@ void Test_iniparser_line(CuTest *tc)
     CuAssertIntEquals(tc, LINE_COMMENT, iniparser_line(";comment", section, key, val));
     CuAssertIntEquals(tc, LINE_COMMENT, iniparser_line(" # comment", section, key, val));
 
+    CuAssertIntEquals(tc, LINE_VALUE, iniparser_line("key = \"  do_not_strip  \"", section, key, val));
+    CuAssertStrEquals(tc, "key", key);
+    CuAssertStrEquals(tc, "  do_not_strip  ", val);
+
+    CuAssertIntEquals(tc, LINE_VALUE, iniparser_line("key = '    '", section, key, val));
+    CuAssertStrEquals(tc, "key", key);
+    CuAssertStrEquals(tc, "    ", val);
+
+    CuAssertIntEquals(tc, LINE_VALUE, iniparser_line("key = \"\"", section, key, val));
+    CuAssertStrEquals(tc, "key", key);
+    CuAssertStrEquals(tc, "", val);
+
+    CuAssertIntEquals(tc, LINE_VALUE, iniparser_line("key = ''", section, key, val));
+    CuAssertStrEquals(tc, "key", key);
+    CuAssertStrEquals(tc, "", val);
+
     /* Test syntax error */
     CuAssertIntEquals(tc, LINE_ERROR, iniparser_line("empty_value", section, key, val));
     CuAssertIntEquals(tc, LINE_ERROR, iniparser_line("not finished\\", section, key, val));
     CuAssertIntEquals(tc, LINE_ERROR, iniparser_line("0x42 / 0b101010", section, key, val));
+
 }
 
 void Test_iniparser_load(CuTest *tc)
@@ -510,7 +595,7 @@ void Test_iniparser_load(CuTest *tc)
     struct dirent *curr;
     struct stat curr_stat;
     dictionary *dic;
-    char ini_path[256];
+    char ini_path[276];
 
     /* Dummy tests */
     dic = iniparser_load("/you/shall/not/path");
@@ -576,4 +661,38 @@ void Test_dictionary_wrapper(CuTest *tc)
     CuAssertStrEquals(tc, NULL, iniparser_getstring(dic, "section", NULL));
 
     iniparser_freedict(dic);
+}
+
+static char _last_error[1024];
+static int _error_callback(const char *format, ...)
+{
+    int ret;
+    va_list argptr;
+    va_start(argptr, format);
+    ret = vsprintf(_last_error, format, argptr);
+    va_end(argptr);
+    return ret;
+
+}
+
+void Test_iniparser_error_callback(CuTest *tc)
+{
+    dictionary *dic;
+
+    /* Specify our custom error_callback */
+    iniparser_set_error_callback(_error_callback);
+
+    /* Trigger an error and check it was written on the right output */
+    dic = iniparser_load("/path/to/nowhere.ini");
+    CuAssertPtrEquals(tc, NULL, dic);
+    CuAssertStrEquals(tc, "iniparser: cannot open /path/to/nowhere.ini\n", _last_error);
+
+    /* Reset erro_callback */
+    _last_error[0] = '\0';
+    iniparser_set_error_callback(NULL);
+
+    /* Make sure custom callback is no more called */
+    dic = iniparser_load("/path/to/nowhere.ini");
+    CuAssertPtrEquals(tc, NULL, dic);
+    CuAssertStrEquals(tc, "", _last_error);
 }

@@ -1,4 +1,4 @@
-
+#pragma once
 /*-------------------------------------------------------------------------*/
 /**
    @file    dictionary.h
@@ -11,8 +11,8 @@
 */
 /*--------------------------------------------------------------------------*/
 
-#ifndef _DICTIONARY_H_
-#define _DICTIONARY_H_
+#ifndef GUARD_DICTIONARY_H_
+#define GUARD_DICTIONARY_H_
 
 /*---------------------------------------------------------------------------
                                 Includes
@@ -21,7 +21,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef WIN32
+#define ssize_t long
+#else
 #include <unistd.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
